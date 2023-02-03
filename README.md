@@ -1,6 +1,6 @@
 # Solis
 
-[Caroline Solis], CSUN 2024 Master's Degree Nomineee(https://www.amorimlab.com)
+[Caroline Solis](https://www.amorimlab.com), CSUN 2024 Master's Degree Nomineee
 
 _This repository_ is very **helpful** with enhancing my organizational skills.  
  > I will be using this repository to submit and update all assignments in Biol 551. 
