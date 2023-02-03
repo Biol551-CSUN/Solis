@@ -9,11 +9,15 @@
 library("here")
 library("tidyverse")
 
+
+
 # Load data----------------------------
 WeightData <- read_csv(here("Week_02","Data","weightdata.csv"))
 
 
+
 # Functions----------------------------
+
 
 
 
@@ -21,6 +25,7 @@ WeightData <- read_csv(here("Week_02","Data","weightdata.csv"))
 head(WeightData)  # Looks at the top 6 lines of the dataframe
 tail(WeightData) # Looks at the bottom 6 lines of the dataframe
 View(WeightData) # opens a new window to look at the entire dataframe
+
 
 
 
