@@ -6,4 +6,4 @@ _This repository_ is very **helpful** with enhancing my organizational skills.
   * [Click Here](https://i.gifer.com/origin/c6/c601eaa58aaeeed58439b9fe2367f299_w200.gif) if you want to go back to my repository home. 
   * Just Kidding. [Click Here!](https://github.com/Biol551-CSUN/Solis)
   
-
+![](https://github.com/Biol551-CSUN/Solis/blob/main/Images/IMG_9864.HEIC](https://media4.giphy.com/media/dvdcBNbAiNVT9Z0iwP/giphy.gif)
