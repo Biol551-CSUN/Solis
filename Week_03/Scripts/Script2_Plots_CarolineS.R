@@ -12,7 +12,6 @@ library(tidyverse)
 
 # Load data----------------------------
 glimpse(penguins)
-ggplot(data=penguins)
 
 
 # Functions----------------------------
