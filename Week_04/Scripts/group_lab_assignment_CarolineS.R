@@ -13,9 +13,6 @@
       # clean and clear labels and follows best practices. 
       # Save the plot in the correct output folder.
 
-# Include both part 1 and part 2 in your script and 
-      # push it to github in the appropriate folders.
-
 
 # Libraries-----------------------------
 library(palmerpenguins)
@@ -49,7 +46,8 @@ penguins %>%
   geom_point() + 
   geom_smooth(method = "lm") +
   labs(x = "Species", 
-       y = "Log Body Mass (g)") +
+       y = "Log Body Mass (g)",
+       color = "Species") +
   ggtitle("Log Body Mass in Penguins Grouped by Species") +
   scale_color_manual(values = beyonce_palette(101)) +
   theme_bw() +
