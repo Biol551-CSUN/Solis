@@ -4,75 +4,49 @@
 ###############################################
 
 # Libraries-----------------------------
-install.packages("lubridate") # package to deal with dates and times
 library(tidyverse)
 library(here)
 library(lubridate)
+library(ggthemes)
+
 # Load data----------------------------
+Cond_Data <- read_csv(here("Week_05", "Data", "CondData.csv")) # Load CondData
+Depth_Data <- read_csv(here("Week_05", "Data", "DepthData.csv")) # Load DepthData
 
 # Functions----------------------------
-now() #what time is it now?
-now(tzone = "EST") # what time is it on the east coast
-now(tzone = "GMT") # what time in GMT
-today()
-today(tzone = "GMT")
-am(now()) # is it morning?
-leap_year(now()) # is it a leap year?
-mdy("02/24/2021")
-dmy("24/02/2021")
-ymd("2021-02-24")
+Cond_Data <- Cond_Data %>%  #assigns CondData
+  mutate(date = mdy_hms(date), # changes character to POSIX variable
+         date = round_date(date, "10 seconds"))  # rounds time to nearest 10 seconds
 
-ymd_hms("2021-02-24 10:22:20 PM")
-mdy_hms("02/24/2021 22:22:20")
-mdy_hm("February 24 2021 10:22 PM")
+Depth_Data <- Depth_Data %>% # assigns DepthData
+  mutate(date = ymd_hms(date)) # changes character to datetime format
 
-# make a character string
-datetimes<-c("02/24/2021 22:22:20",
-             "02/25/2021 11:21:10",
-             "02/26/2021 8:01:52")
-
-# make a character string
-datetimes<-c("02/24/2021 22:22:20", 
-             "02/25/2021 11:21:10", 
-             "02/26/2021 8:01:52") 
-
-# convert to datetimes
-datetimes <- mdy_hms(datetimes)
-
-# convert to datetimes
-datetimes <- mdy_hms(datetimes) 
-month(datetimes)
-
-month(datetimes, label = TRUE)
-
-
-month(datetimes, label = TRUE, abbr = FALSE) #extract the months from the character string and state the month name
-day(datetimes) #extract day
-wday(datetimes, label = TRUE) #extract day of the week
-
-hour(datetimes) #extract hour
-minute(datetimes) # extract minute
-second(datetimes) # extract second
-
-# lets add 4 hours to all the datetimes
-
-datetimes + hours(4) #adds 4 hours
-
-datetimes + days(2) # this adds 2 days
-
-round_date(datetimes, "minute") #round to nearest minute
-
-round_date(datetimes, "5 mins") # round to nearest 5 minute
-
-# Using CondData and converting the data column to a datetime
-# We do this to have R treat this column as dates rather than just a character
-
-glimpse(CondData)
-view(CondData)
-
-CondData %>%
-  mutate(Date = mdy_hm(Date))
-
-
+Depth_Cond <- inner_join(Depth_Data,  
+                           Cond_Data) %>%  # joins DepthData and CondData and drops NA values
+  mutate(date = round_date(date, "1 minute")) %>% # rounds and averages dates by minute
+  group_by(date) %>% # group by date
+  summarise(mean_depth = mean(Depth, na.rm = TRUE), # calculate mean depth
+            mean_temp = mean(Temperature, na.rm = TRUE), # calculate mean temp
+            mean_salinity = mean(Salinity, na.rm = TRUE)) %>% # calculate mean salinity
+  ggplot(aes(x= date,  # assigns date to x variable
+             y = mean_temp)) +  # assigns mean temp to y variable
+  geom_line(color = "black") + # gives line with color
+  geom_point(size = 1, color = "maroon") + # gives points with size 1 and color 
+  theme_classic() + # classic theme
+  labs(x = "Time on January 15th, 2021", # x, y, and plot title labels
+       y = "Mean Temperature",
+       title = "Average Temperature by Time") +
+  theme(panel.background = element_rect(fill= "lightblue"), # background beige
+        panel.grid.major = element_line(color = "blue", # add dashed gray gridlines
+                                        linetype = "dashed"))
+Depth_Cond
+ggsave(here("Week_05", "Output", "Jan15plot_5b_lab.png"), width = 7, height = 5) #saves and exports plot as a png
 
 # Data analysis------------------------
+
+
+
+
+
+
+
