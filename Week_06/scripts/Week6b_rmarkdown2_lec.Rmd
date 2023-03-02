@@ -1,0 +1,112 @@
+---
+title: "Week6b_Lec"
+author: "Caroline"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+---
+
+```{r setup, include=FALSE, echo=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.path = "../output/") #adding the path directory
+# to save as pdf: dev="pdf"
+```
+
+```{r}
+#install.packages("kableExtra")
+#install.packages("ymlthis") #this is used to convert to yaml
+library(here)
+library(tidyverse)
+library(palmerpenguins)
+library(kableExtra)
+```
+
+```{r penguins}
+summary(penguins)
+```
+
+## PLOTS
+
+### ->adding width
+
+```{r penguin_plot1, out.width="70%", fig.cap="This is a boxplot of penguins"}
+penguins %>% #missing the penguin dataset
+  ggplot(aes(x = flipper_length_mm,
+             y = body_mass_g,
+             color = species)) +
+geom_point() +
+  labs(x = "Flipper Length (mm)",
+       y = "Body Mass (g)",
+       color = "Species") +
+  theme_bw()
+```
+### -> adding height
+
+```{r penguin_plot2, fig.width=3, fig.height=4, echo=FALSE, warning=FALSE}
+penguins %>% #missing the penguin dataset
+  ggplot(aes(x = flipper_length_mm,
+             y = body_mass_g,
+             color = species)) +
+geom_point() +
+  labs(x = "Flipper Length (mm)",
+       y = "Body Mass (g)",
+       color = "Species") +
+  theme_bw()
+```
+
+### -> using align
+
+```{r penguin_plot3, fig.width=3, fig.height=4, fig.align="center", echo=FALSE, warning=FALSE}
+penguins %>% #missing the penguin dataset
+  ggplot(aes(x = flipper_length_mm,
+             y = body_mass_g,
+             color = species)) +
+geom_point() +
+  labs(x = "Flipper Length (mm)",
+       y = "Body Mass (g)",
+       color = "Species") +
+  theme_bw()
+```
+
+### -> using aspect
+
+```{r penguin_plot4, fig.align="center", fig.asp=1.2, echo=FALSE, warning=FALSE}
+penguins %>% #missing the penguin dataset
+  ggplot(aes(x = flipper_length_mm,
+             y = body_mass_g,
+             color = species)) +
+geom_point() +
+  labs(x = "Flipper Length (mm)",
+       y = "Body Mass (g)",
+       color = "Species") +
+  theme_bw()
+```
+
+
+## CREATE TABLE
+
+
+### -> by hand
+
+| Time  | Session | Topic    |
+|:------|:-------:|---------:|
+| _left_ | _center_| _right_ |
+| 01:00  | 1       | Anatomy |
+| 01:50  |         | *Break* |
+| 02:00  | 2       | Tables  |
+| 02:45  |         | *Break* |
+
+### -> using kable
+
+```{r}
+penguins %>%
+  group_by(species) %>%
+  summarise(billmean = mean(bill_length_mm, na.rm = TRUE)) %>%
+  kbl()  %>% # make it a kable table
+  kable_classic()%>% #theme
+  row_spec(2, bold = T, color = "black", background = "lightgrey") %>% #choose column
+   kable_styling(full_width = FALSE) #automatically change to fit text
+```
+

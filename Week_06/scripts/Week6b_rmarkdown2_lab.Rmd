@@ -1,0 +1,88 @@
+---
+title: "Week6b Lab: Using ChemData"
+author: "Caroline"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning=FALSE, 
+                      message=FALSE,
+                      fig.path = "../output/") #adding the path directory
+```
+
+# **Quick Summary**
+
+Here we will be using the Chemical Data from *Week 4* and will be following these steps:
+ 
+  1. Load the libraries needed to use specific functions 
+  2. Load the data that we will be using throughout this script  
+  3. Create a plot that focuses on the Temp and Salinity per zone  
+  4. Create a table looking at the mean of Salinity per zone  
+
+# **Loading Data**
+
+### *Load Libraries*
+
+These are the libraries that will be needed for this script:
+
+```{r}
+library(tidyverse)
+library(here)
+library(kableExtra)
+```
+
+### *Load ChemData*
+
+This is the data that we will be using for this script. Note that we will also be filtering out any incomplete rows in our data:
+    
+```{r}
+ChemData<-read_csv(here("Week_04","data", "chemicaldata_maunalua.csv"))
+
+ChemData_clean <- ChemData %>%
+  filter(complete.cases(.)) #filters out everything that is not a complete row
+```
+
+This is just to visualize a summary of the data:
+
+```{r ChemData_clean}
+summary(ChemData_clean) #summary of data
+```
+# **Plot and Table**
+
+### *Create Plot*
+
+Now we are creating our plot by calling our filtered data and setting all the different parameters:
+
+```{r chem_data_clean_plot, fig.align="center", fig.asp=1.2, fig.cap="Plots by Temp v Salinity; grouped by Zone v Tide Time"}
+ChemData_clean %>% #calling updated chemdata
+  ggplot(aes(x = Temp_in, #setting x and y axis to temp and salinity
+             y = Salinity,
+             color = Zone)) + #basing color by Zone
+geom_point() +
+  labs(x = "Temperature", # x and y labels
+       y = "Salinity",
+       color = "Zone") +
+  theme_bw() +
+  facet_grid(Zone~Tide_time) #facet grid by zone and tide time
+```
+
+### *Create Table*
+
+Creating a table to better visualize the mean of salinity by zone:
+
+```{r fig.cap="Table showing the mean of Salinity grouped by Zone"}
+ChemData_clean %>% # calling data
+  group_by(Zone) %>% # group by zone
+  summarise(Mean = mean(Salinity, na.rm = TRUE)) %>% # summarise the mean of sal
+  kbl()  %>% # make it a kable table
+  kable_classic()%>% #theme
+  row_spec(2, bold = T, color = "black", background = "lightgrey") %>% #choose column to change 
+   kable_styling(full_width = FALSE) #automatically change to fit text
+```
+
+
