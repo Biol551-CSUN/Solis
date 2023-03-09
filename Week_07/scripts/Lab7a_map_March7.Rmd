@@ -1,0 +1,115 @@
+---
+title: "Week7a Lab: Map Using Cat Data"
+author: "Caroline"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+---
+
+```{r setup, include=FALSE, echo=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning=FALSE, 
+                      message=FALSE,
+                      fig.path = "../output/") #adding the path directory
+```
+
+
+
+# **Quick Summary**
+
+Here we will be using the Cats Data from *TidyTuesday 2023/01/31* and will be following these steps:
+ 
+  1. Load the libraries needed to use specific functions 
+  2. Load the data that we will be using throughout this script  
+  3. Create a map of tracked pet cats based on longitude and latitude coordinates  
+
+# **Loading Data**
+
+### *Load Libraries*
+
+These are the libraries that will be needed for this script:
+## Including Plots
+
+```{r}
+library(tidyverse)
+library(sf)
+library(tmap)
+```
+
+### *Load cat data*
+
+This is the data that we will be using for this script:
+
+```{r}
+# Get the Data
+
+# Read in with tidytuesdayR package 
+# Install from CRAN via: install.packages("tidytuesdayR")
+# This loads the readme and all the datasets for the week of interest
+
+# Either ISO-8601 date or year/week works!
+
+tuesdata <- tidytuesdayR::tt_load('2023-01-31')
+tuesdata <- tidytuesdayR::tt_load(2023, week = 5)
+
+cats_uk <- tuesdata$cats_uk
+cats_uk_reference <- tuesdata$cats_uk_reference
+
+```
+
+
+This is just to visualize a summary of the data:
+
+```{r}
+# Check the structure of the data
+glimpse(cats_uk)
+```
+
+
+# **Filter Data**
+
+### *Pull columns "location_long" and "location_lat"*
+
+Now we are filtering out specific columns to map and setting all the different parameters. Note, These columns contain the longitude and latitude coordinates for each data point. I'm using these columns to create a map showing the location of each data point:
+
+```{r}
+# Create sf object
+cats_sf <- st_as_sf(cats_uk, coords = c("location_long", "location_lat"), crs = 4326)
+
+```
+
+
+# **Create Map**
+
+### *Create Map of UK*
+
+Here we are pulling all of the coordinates to create a map of the UK that will be used for the overlapping cat datapoints:
+
+```{r}
+# Create UK map
+uk_map <- map_data("world", "UK")
+
+```
+
+
+### *Create Map of cats*
+
+Now we are creating our map by calling our filtered data and setting all the different parameters:
+
+```{r}
+# Create map using ggplot
+ggplot() +
+  geom_polygon(data = uk_map, aes(x = long, y = lat, group = group), fill = "lightgray") + # calls uk_map and columns in uk data used to plot
+  geom_point(data = cats_uk, aes(x = location_long, y = location_lat, color = study_name), size = 1) + #calls cat data and columns
+  labs(title = "Cat locations in the UK", x = "Longitude", y = "Latitude", color = "orange") + #create titles
+  theme_minimal()+
+  guides(color = FALSE) #removes legend
+
+```
+
+
+
+
+
