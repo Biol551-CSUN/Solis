@@ -19,6 +19,11 @@ knitr::opts_chunk$set(echo = TRUE,
 
 The Last of Us is a popular video game and TV show that centers around a post-apocalyptic world where a fungal infection has turned humans into infected creatures. In this report, we will be comparing the different levels of infected from the game/show using a plot that displays the frequency and difficulty of each level alongside its respective image.
 
+
+
+![](https://i.pinimg.com/736x/41/87/2a/41872ad8a2ff4d05d41b5453a9403e69.jpg)
+
+
 ## Loading Libraries
 
 To start, we need to load the necessary packages to create our plot. We will be using the `tidyverse`, `imager`, and `ggimage`.
@@ -113,6 +118,7 @@ bad_plot <- ggplot(image_df, aes(x = difficulty, y = frequency)) + # Add images 
         plot.title = element_text(size = 20, color = "black"),
         plot.background = element_rect(fill = "gray90"))
   
+
 # Output the plot
 bad_plot
 ggsave(here("Goodplot_Badplot", "Output", "bad_plot.png"), width = 7, height = 5)
