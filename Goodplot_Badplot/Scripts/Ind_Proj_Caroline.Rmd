@@ -5,75 +5,159 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE, echo=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      fig.path = "../output/") #adding the path
 ```
 
+## Introduction
+
+The Last of Us is a popular video game and TV show that centers around a post-apocalyptic world where a fungal infection has turned humans into infected creatures. In this report, we will be comparing the different levels of infected from the game/show using a plot that displays the frequency and difficulty of each level alongside its respective image.
+
+## Loading Libraries
+
+To start, we need to load the necessary packages to create our plot. We will be using the `tidyverse`, `imager`, and `ggimage`.
 
 
-```{r}
-# Load Data -----------------------------
-#install.packages("ggimage")
-#install.packages("magick")
-#install.packages("DT")
-library(DT)
-library(htmltools)
-library(htmlwidgets)
-library(ggplot2)
-library(ggimage)
-
+```{r libraries, message=FALSE}
+# Libraries -----------------------------
+#install.packages("imager")
+library("tidyverse") # for data manipulation and plotting
+library("imager") # for image loading and manipulation
+library("ggimage") # for displaying images in ggplot2
+library("ggplot2") # for plotting
+library("scales") # for scaling axes
+library("grid")
 ```
 
+## Creating Data
+
+Next, we need to load the data and organize it in a data.frame that includes the stage, difficulty, frequency, and image data. We will also specify the path to the directory containing the images, load the images, and store them in a list.
 
 ```{r}
 # Create Data -----------------------------
 
+# Define the path to the image folder
+path <- "/Users/solis/Desktop/GradSchool/second_semester/Computer_Modeling/Solis/Goodplot_Badplot/Data/Character_images/"
 
+# Get a list of all the file names in the image folder
+all_files <- list.files(path = path, pattern = ".png", full.names = TRUE)
 
-# Create a data frame with the stages of infection
-infection_df <- data.frame(
-  stage = c("Runner", "Stalker", "Clicker", "Bloater", "Shambler", "Rat_King"),
-  difficulty = c(1, 2, 4, 5, 3, 6),
-  frequency = c(50, 60, 80, 70, 40, 10),
-  image = c("Runner.jpg", "Stalker.jpg", "Clicker.jpg", "Bloater.jpg", "Shambler.jpg", "RatKing.jpg")
+# Load the images and store them in a list
+image_list <- lapply(all_files, imager::load.image)
+
+# Define a data frame to hold the image information
+image_df <- data.frame(
+  stage = c("Runner", "Stalker", "Clicker", "Bloater", "Shambler", "Rat_King"), # define the stage names
+  difficulty = c(1, 2, 4, 5, 3, 6), # define the difficulty levels
+  frequency = c(100, 120, 160, 140, 80, 20), # define the frequency of appearance
+  image_path = all_files # define the path to the image files
 )
 
-
-
-# Create a function to display the images
-display_image <- function(filename) {
-  tags$img(src = filename)
+# Define a function to map random numbers to difficulty levels
+random_frequency <- function(difficulty) {
+  lower <- difficulty * 10
+  upper <- difficulty * 20
+  frequency <- runif(1, lower, upper)
+  return(frequency)
 }
 
-# Apply the function to the 'image' column of the data frame
-infection_df$image <- lapply(infection_df$image, display_image)
-
-# Display the data frame with the images
-datatable(infection_df, options = list(dom = 't', paging = FALSE, ordering = FALSE))
+# Generate random frequencies based on the difficulty level
+image_df$frequency <- sapply(image_df$difficulty, random_frequency)
 
 ```
 
+## Creating Plots
+
+Now that we have our data organized, we can create our plot using ggimage
 
 
 ```{r}
-# Define plot settings
-bad_plot <- ggplot(infection_df, aes(x = difficulty, y = frequency)) +
-  theme_void() +
-  xlab("Difficulty Level") +
-  ylab("Frequency of Occurrence") +
-  ggtitle("Stages of Infection") +
-  theme(plot.title = element_text(hjust = 0.5, size = 20))
 
+#bad plot ---------------------------
+# Use ggplot2 to create a scatter plot with multiple images per point
+bad_plot <- ggplot(image_df, aes(x = difficulty, y = frequency)) +
 
-```
+  # Add images with some jitter for legibility
+  geom_image(aes(image = image_path), size = 0.2, position = position_jitter(width = 0.5, height = 10)) +
+  geom_image(aes(image = image_path), size = 0.2, position = position_jitter(width = 0.5, height = -10)) +
 
+  # Add text labels with some overlap checks for legibility
+  geom_text(aes(label = stage), size = 4, nudge_y = 75, check_overlap = TRUE, angle = 45, color = "red") +
+  geom_text(aes(label = stage), size = 4, nudge_x = -75, check_overlap = TRUE, angle = 135, color = "red") +
 
-```{r}
-# Add images to the plot
-bad_plot <- bad_plot +
-  geom_image(aes(x = difficulty, y = frequency, image = image), size = 0.1)
+  # Adjust x and y axes limits, breaks, and labels
+  scale_x_continuous(limits = c(-1, 8), breaks = seq(0, 9, by = 1)) +
+  scale_y_continuous(limits = c(0, 160), expand = c(0, 0), breaks = seq(0, 200, by = 25),
+                     name = "Frequency", 
+                     sec.axis = sec_axis(~ . / 2, name = "Difficulty")) +
 
+  # Add plot title and axis labels
+  labs(title = "Number of Times Infected Appears",
+       x = "Difficulty and Stage", y = "") +
+
+  # Adjust plot theme elements for legibility
+  theme(panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(size = 0.5, color = "red"),
+        panel.grid.minor = element_line(size = 0.5, color = "black"),
+        axis.line = element_line(size = 1, color = "black"),
+        axis.text.x = element_text(size = 12, color = "black", angle = 90),
+        axis.text.y = element_text(size = 12, color = "black"),
+        axis.title = element_text(size = 13, color = "black"),
+        plot.title = element_text(size = 20, color = "black"),
+        plot.background = element_rect(fill = "gray90"))
+  
 # Output the plot
 bad_plot
+
+
 ```
+
+
+```{r}
+
+#good plot ----------------------------
+
+# Define custom theme
+my_theme <- function(base_size = 12) {
+  theme_minimal(base_size = base_size) +
+    theme(plot.background = element_rect(fill = "white"),
+          panel.grid.minor = element_blank(),
+          axis.line.x = element_line(size = 1, color = "black"),
+          axis.line.y = element_line(size = 1, color = "black"),
+          axis.ticks = element_blank(),
+          axis.text.x = element_text(size = base_size * 1.2, color = "black", hjust = 0.5, vjust = 1),
+          axis.text.y = element_text(size = base_size * 1.2, color = "black", hjust = 0.5, vjust = 1),
+          axis.title.x = element_text(size = base_size * 1.5, color = "black", hjust = 0.5, vjust = -0.2),
+          axis.title.y = element_text(size = base_size * 1.5, color = "black", hjust = 0.5, vjust = 1.2),
+          legend.position = "none",
+          plot.title = element_text(size = base_size * 2, color = "black", hjust = 0.5, vjust = 1.5),
+          plot.margin = margin(0.5, 0.5, 0.5, 0.5, "cm"),
+          panel.border = element_rect(color = "gray50", fill = NA, linewidth = 1))
+
+}
+
+# Define custom color palette
+my_colors <- c("#F0A800", "#FFD480", "#FFFFBF", "#A0C8FF", "#0070C0")
+
+# Use ggplot2 to create a scatter plot with multiple images per point
+good_plot <- ggplot(image_df, aes(x = difficulty, y = frequency)) +
+  # Add images with some jitter for legibility
+  geom_image(aes(image = image_path), size = 0.2, position = position_jitter(width = 0.25, height = 5)) +
+  # Add text labels with some overlap checks for legibility
+  geom_text(aes(label = stage), size = 6, color = "black", fontface = "bold", position = position_nudge(y = 50)) +
+  # Add custom theme
+  my_theme() +
+  # Adjust x and y axes limits, breaks, and labels
+  scale_x_continuous(limits = c(-1, 10), breaks = seq(0, 10, by = 2), expand = c(0, 0), name = "Level of Difficulty") +
+  scale_y_continuous(limits = c(0, 200), breaks = seq(0, 200, by = 30), expand = c(0, 0), name = "Frequency of Appearance") +
+  # Add plot title and axis labels
+  labs(title = "Frequency of Infected Based on Stage", x = NULL, y = NULL)
+
+# Output the plot
+good_plot
+
+
+```
+
 
