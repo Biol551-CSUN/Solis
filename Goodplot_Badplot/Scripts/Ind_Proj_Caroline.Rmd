@@ -1,0 +1,79 @@
+---
+title: "Good Plot/Bad Plot Competition"
+author: "Caroline S."
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+# Load Data -----------------------------
+#install.packages("ggimage")
+#install.packages("magick")
+#install.packages("DT")
+library(DT)
+library(htmltools)
+library(htmlwidgets)
+library(ggplot2)
+library(ggimage)
+
+```
+
+
+```{r}
+# Create Data -----------------------------
+
+
+
+# Create a data frame with the stages of infection
+infection_df <- data.frame(
+  stage = c("Runner", "Stalker", "Clicker", "Bloater", "Shambler", "Rat_King"),
+  difficulty = c(1, 2, 4, 5, 3, 6),
+  frequency = c(50, 60, 80, 70, 40, 10),
+  image = c("Runner.jpg", "Stalker.jpg", "Clicker.jpg", "Bloater.jpg", "Shambler.jpg", "RatKing.jpg")
+)
+
+
+
+# Create a function to display the images
+display_image <- function(filename) {
+  tags$img(src = filename)
+}
+
+# Apply the function to the 'image' column of the data frame
+infection_df$image <- lapply(infection_df$image, display_image)
+
+# Display the data frame with the images
+datatable(infection_df, options = list(dom = 't', paging = FALSE, ordering = FALSE))
+
+```
+
+
+
+```{r}
+# Define plot settings
+bad_plot <- ggplot(infection_df, aes(x = difficulty, y = frequency)) +
+  theme_void() +
+  xlab("Difficulty Level") +
+  ylab("Frequency of Occurrence") +
+  ggtitle("Stages of Infection") +
+  theme(plot.title = element_text(hjust = 0.5, size = 20))
+
+
+```
+
+
+```{r}
+# Add images to the plot
+bad_plot <- bad_plot +
+  geom_image(aes(x = difficulty, y = frequency, image = image), size = 0.1)
+
+# Output the plot
+bad_plot
+```
+
