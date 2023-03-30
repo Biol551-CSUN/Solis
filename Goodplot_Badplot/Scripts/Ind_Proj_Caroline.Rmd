@@ -87,7 +87,7 @@ Now that we have our data organized, we can create our plot using ggplot and ggi
 
 The bad plot shows the frequency of infected based on stage, but the overlapping images and text make it difficult to read and interpret the data. The images and text overlap each other, which makes it difficult to identify the different stages and their corresponding frequencies. In addition, the plot lacks a clear title and axis labels, which makes it challenging to understand the data presented.
 
-```{r}
+```{r bad plot}
 
 #bad plot ---------------------------
 # Use ggplot2 to create a scatter plot with multiple images per point
@@ -123,7 +123,7 @@ bad_plot
 The good plot shows the frequency of appearance of infected stages in a video game, with each stage represented by an image. The x-axis displays the different stages, and the y-axis shows the frequency of appearance. The images are spread out and aligned with each stage, and a transparent bar is added to emphasize the frequency of appearance of each stage. The legend also displays the different stages with their corresponding colors. Overall, the good plot provides a clear and organized visualization of the data, making it easy to identify the frequency of appearance of each infected stage in the video game.
 
 
-```{r}
+```{r good plot}
 #good plot ----------------------------
 
 # Define custom color palette
