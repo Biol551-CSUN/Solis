@@ -2,12 +2,17 @@
 title: "Good Plot/Bad Plot Competition"
 author: "Caroline S."
 date: "`r Sys.Date()`"
-output: html_document
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
 ---
 
-```{r setup, include=FALSE, echo=FALSE, warning=FALSE}
+```{r setup, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
-                      fig.path = "../output/") #adding the path
+                      warning=FALSE, 
+                      message=FALSE,
+                      fig.path = "../output/") #adding the path directory
 ```
 
 ## Introduction
@@ -45,6 +50,11 @@ all_files <- list.files(path = path, pattern = ".png", full.names = TRUE)
 
 # Load the images and store them in a list
 image_list <- lapply(all_files, imager::load.image)
+```
+
+### Data Table
+
+```{r}
 
 # Define a data frame to hold the image information
 image_df <- data.frame(
@@ -65,41 +75,36 @@ random_frequency <- function(difficulty) {
 # Generate random frequencies based on the difficulty level
 image_df$frequency <- sapply(image_df$difficulty, random_frequency)
 
+image_df
+
 ```
 
 ## Creating Plots
 
-Now that we have our data organized, we can create our plot using ggimage
+Now that we have our data organized, we can create our plot using ggplot and ggimage
 
+### Bad Plot
+
+The bad plot shows the frequency of infected based on stage, but the overlapping images and text make it difficult to read and interpret the data. The images and text overlap each other, which makes it difficult to identify the different stages and their corresponding frequencies. In addition, the plot lacks a clear title and axis labels, which makes it challenging to understand the data presented.
 
 ```{r}
 
 #bad plot ---------------------------
 # Use ggplot2 to create a scatter plot with multiple images per point
-bad_plot <- ggplot(image_df, aes(x = difficulty, y = frequency)) +
-
-  # Add images with some jitter for legibility
+bad_plot <- ggplot(image_df, aes(x = difficulty, y = frequency)) + # Add images with some jitter for legibility
   geom_image(aes(image = image_path), size = 0.2, position = position_jitter(width = 0.5, height = 10)) +
-  geom_image(aes(image = image_path), size = 0.2, position = position_jitter(width = 0.5, height = -10)) +
-
-  # Add text labels with some overlap checks for legibility
+  geom_image(aes(image = image_path), size = 0.2, position = position_jitter(width = 0.5, height = -10)) + # Add text labels with some overlap checks for legibility
   geom_text(aes(label = stage), size = 4, nudge_y = 75, check_overlap = TRUE, angle = 45, color = "red") +
-  geom_text(aes(label = stage), size = 4, nudge_x = -75, check_overlap = TRUE, angle = 135, color = "red") +
-
-  # Adjust x and y axes limits, breaks, and labels
+  geom_text(aes(label = stage), size = 4, nudge_x = -75, check_overlap = TRUE, angle = 135, color = "red") + # Adjust x and y axes limits, breaks, and labels
   scale_x_continuous(limits = c(-1, 8), breaks = seq(0, 9, by = 1)) +
   scale_y_continuous(limits = c(0, 160), expand = c(0, 0), breaks = seq(0, 200, by = 25),
                      name = "Frequency", 
-                     sec.axis = sec_axis(~ . / 2, name = "Difficulty")) +
-
-  # Add plot title and axis labels
+                     sec.axis = sec_axis(~ . / 2, name = "Difficulty")) + # Add plot title and axis labels
   labs(title = "Number of Times Infected Appears",
-       x = "Difficulty and Stage", y = "") +
-
-  # Adjust plot theme elements for legibility
+       x = "Difficulty and Stage", y = "") + # Adjust plot theme elements for legibility
   theme(panel.background = element_rect(fill = "white"),
         panel.grid.major = element_line(size = 0.5, color = "red"),
-        panel.grid.minor = element_line(size = 0.5, color = "black"),
+        panel.grid.minor = element_line(size = 0.5, color = "purple"),
         axis.line = element_line(size = 1, color = "black"),
         axis.text.x = element_text(size = 12, color = "black", angle = 90),
         axis.text.y = element_text(size = 12, color = "black"),
@@ -113,49 +118,33 @@ bad_plot
 
 ```
 
+### Good Plot
+
+The good plot shows the frequency of appearance of infected stages in a video game, with each stage represented by an image. The x-axis displays the different stages, and the y-axis shows the frequency of appearance. The images are spread out and aligned with each stage, and a transparent bar is added to emphasize the frequency of appearance of each stage. The legend also displays the different stages with their corresponding colors. Overall, the good plot provides a clear and organized visualization of the data, making it easy to identify the frequency of appearance of each infected stage in the video game.
+
 
 ```{r}
-
 #good plot ----------------------------
 
-# Define custom theme
-my_theme <- function(base_size = 12) {
-  theme_minimal(base_size = base_size) +
-    theme(plot.background = element_rect(fill = "white"),
-          panel.grid.minor = element_blank(),
-          axis.line.x = element_line(size = 1, color = "black"),
-          axis.line.y = element_line(size = 1, color = "black"),
-          axis.ticks = element_blank(),
-          axis.text.x = element_text(size = base_size * 1.2, color = "black", hjust = 0.5, vjust = 1),
-          axis.text.y = element_text(size = base_size * 1.2, color = "black", hjust = 0.5, vjust = 1),
-          axis.title.x = element_text(size = base_size * 1.5, color = "black", hjust = 0.5, vjust = -0.2),
-          axis.title.y = element_text(size = base_size * 1.5, color = "black", hjust = 0.5, vjust = 1.2),
-          legend.position = "none",
-          plot.title = element_text(size = base_size * 2, color = "black", hjust = 0.5, vjust = 1.5),
-          plot.margin = margin(0.5, 0.5, 0.5, 0.5, "cm"),
-          panel.border = element_rect(color = "gray50", fill = NA, linewidth = 1))
-
-}
-
 # Define custom color palette
-my_colors <- c("#F0A800", "#FFD480", "#FFFFBF", "#A0C8FF", "#0070C0")
+my_colors <- c("#F0A800", "#FFD480", "#FFFFBF", "#A0C8FF", "#0070C0", "tan")
 
 # Use ggplot2 to create a scatter plot with multiple images per point
-good_plot <- ggplot(image_df, aes(x = difficulty, y = frequency)) +
+good_plot <- ggplot(image_df, aes(x = stage, y = frequency, fill = stage)) +
+  # Add a transparent bar for each stage
+  geom_bar(stat = "identity", alpha = 0.3) +
   # Add images with some jitter for legibility
-  geom_image(aes(image = image_path), size = 0.2, position = position_jitter(width = 0.25, height = 5)) +
-  # Add text labels with some overlap checks for legibility
-  geom_text(aes(label = stage), size = 6, color = "black", fontface = "bold", position = position_nudge(y = 50)) +
-  # Add custom theme
-  my_theme() +
+  geom_image(aes(image = image_path), size = 0.15, position = position_jitter(width = 0.1, height = 0.1)) +
   # Adjust x and y axes limits, breaks, and labels
-  scale_x_continuous(limits = c(-1, 10), breaks = seq(0, 10, by = 2), expand = c(0, 0), name = "Level of Difficulty") +
-  scale_y_continuous(limits = c(0, 200), breaks = seq(0, 200, by = 30), expand = c(0, 0), name = "Frequency of Appearance") +
+  scale_x_discrete(name = "Infected Stage") +
+  scale_y_continuous(limits = c(0, 200), breaks = seq(0, 200, by = 20), expand = c(0, 0), name = "Frequency of Appearance") +
   # Add plot title and axis labels
   labs(title = "Frequency of Infected Based on Stage", x = NULL, y = NULL)
 
 # Output the plot
 good_plot
+
+
 
 
 ```
