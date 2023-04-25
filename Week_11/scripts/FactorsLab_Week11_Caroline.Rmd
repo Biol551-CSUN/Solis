@@ -1,0 +1,68 @@
+---
+title: "Week 11: Factors Lab"
+author: "Caroline S."
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning=FALSE, 
+                      message=FALSE,
+                      fig.path = "../output/") #adding the path directory
+```
+
+# Factors Lab
+
+## Load Libraries
+
+```{r warning=FALSE}
+library(tidyverse)
+library(here)
+library(ggthemes)
+```
+
+## Load Data 
+
+Load in our Intertidal Data to look at Quadrat Heights 
+
+```{r warning=FALSE}
+tidal_data <- read_csv(here("Week_11","data", "intertidaldata.csv"))
+```
+
+
+## Filtering Out The Data
+
+Here we will do some data wrangling which will help us visualize and plot Quadrat Heights per Quadrat
+
+```{r warning=FALSE}
+Quadrat_data <- tidal_data %>%
+  filter(!is.na(Quadrat)) %>% # remove NAs in Quadrat
+  mutate(Quadrat = str_replace(Quadrat, pattern = "[0-9]|\\.", replacement = ""), # replace nums and periods with white space
+         Quadrat = str_trim(Quadrat)) # remove white space
+```
+
+
+
+## Plotting
+
+We will now create a plot using the above data we just filtered out
+
+```{r warning=FALSE}
+Quad_factor <- Quadrat_data %>%
+  group_by(Quadrat) %>% # group by Quadrat
+  count(Quadrat) %>% # count all instances of each height based on Quadrat
+  mutate(Quadrat = factor(Quadrat, levels = c("Low", "Mid", "High"))) %>% # turn quadrat into a factor and change levels to Low, Mid, and High
+  ggplot(aes(x = fct_reorder(Quadrat, n), #ascending order
+             y = n, # count 
+             fill = Quadrat))+ # fill is per Quadrat
+  geom_col() +
+  labs(x = "Quadrat Type",
+       y = "Count",
+       title = "Quadrat Count by Quadrat Type")
+Quad_factor
+```
+

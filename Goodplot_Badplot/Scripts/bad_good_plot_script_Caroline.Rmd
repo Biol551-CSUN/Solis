@@ -127,7 +127,7 @@ ggsave(here("Goodplot_Badplot", "Output", "bad_plot.png"), width = 7, height = 5
 
 ### Good Plot
 
-The good plot shows the frequency of appearance of infected stages in a video game, with each stage represented by an image. The x-axis displays the different stages, and the y-axis shows the frequency of appearance. The images are spread out and aligned with each stage, and a transparent bar is added to emphasize the frequency of appearance of each stage. The legend also displays the different stages with their corresponding colors. Overall, the good plot provides a clear and organized visualization of the data, making it easy to identify the frequency of appearance of each infected stage in the video game.
+The good plot shows the frequency of appearance of infected stages in the video game, with each stage represented by an image. The x-axis displays the different stages, and the y-axis shows the frequency of appearance. The images are spread out and aligned with each stage, and a transparent bar is added to emphasize the frequency of appearance of each stage. The legend also displays the different stages with their corresponding colors. Overall, the good plot provides a clear and organized visualization of the data, making it easy to identify the frequency of appearance of each infected stage in the video game.
 
 
 ```{r}
