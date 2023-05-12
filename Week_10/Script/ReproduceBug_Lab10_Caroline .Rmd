@@ -1,0 +1,52 @@
+---
+title: "Week10_lab_addingbug_caroline"
+author: "Caroline S."
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Libraries
+```{r}
+# install.packages("datapasta")
+# install.packages("reprex")
+
+library(datapasta)
+library(reprex)
+
+```
+
+# Producing a bug in my script
+This will create a reproducible example that can be copied and pasted into an R session to reproduce the error. 
+
+```{r}
+
+# create a vector of numbers
+my_numbers <- c(1, 2, 3, 4, 5)
+
+# function to add two numbers
+add_two_numbers <- function(x, y) {
+  result <- x + y
+  return(result)
+}
+
+# use lapply to apply add_two_numbers to my_numbers
+result <- lapply(my_numbers, add_two_numbers, y = 3)
+
+# print the result
+print(result)
+
+# use datapasta to create reproducible code
+df_paste <- dpasta(result)
+
+# use reprex to create reproducible example
+reprex(df_paste)
+
+sessionInfo()
+
+```
+
+
