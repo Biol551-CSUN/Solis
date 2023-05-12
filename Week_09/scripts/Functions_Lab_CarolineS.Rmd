@@ -1,0 +1,87 @@
+---
+title: 'Week 8b Lab: Creating Functions'
+author: "Caroline S."
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE)
+```
+
+
+
+```{r}
+#install.packages("tidyverse")
+#install.packages("PNWColors")
+library("tidyverse")
+library(palmerpenguins)
+library(PNWColors) # for the PNW color palette 
+# Load the required library
+library(ggplot2)
+library(here)
+```
+
+
+```{r}
+#Function that is not a plot:
+
+# Define a function to calculate the sum of a species for each island
+species_per_island <- function(species_name) {
+  species_data <- subset(penguins, 
+                         species == species_name)  # Filter the dataset by species
+  sum_by_island <- aggregate(species_data$species, 
+                             by = list(species_data$island), 
+                             FUN = length) # Calculate the count of the species for each island
+  colnames(sum_by_island) <- c("island", "sum_species") # Rename the columns for clarity
+  return(sum_by_island)  # Return the resulting data frame
+}
+
+# Example 1 for species_per_island function
+species_per_island("Adelie") # Call the function with a species name
+
+
+# Example 2 for species_per_island function
+species_per_island("Gentoo") # Call the function with a species name
+
+
+```
+
+
+
+
+```{r}
+#Function that is a plot:
+
+# Function that calculates count of occurrences of each species per island and creates a plot
+count_species_with_plot <- function(x, y, fill) {
+  species_counts <- aggregate(penguins$species, by = penguins[c(x, fill)], FUN = length)
+  colnames(species_counts) <- c(x, "species", y)
+  
+  # Create plot
+  library(ggplot2)
+  plot <- ggplot(species_counts, aes_string(x = x, y = y, fill = fill)) +
+    geom_col() +
+    labs(x = x, y = y, fill = fill) +
+    ggtitle("Number of Species per Island") +
+    theme_minimal()
+  
+  return(list(data = species_counts, plot = plot))
+}
+
+# Call the function
+# Example 1 for count_species_with_plot function
+plot1_island <- count_species_with_plot(x = "island", y = "count", fill = "species")$plot
+print(plot1_island)
+# Save the plot to the output folder using ggsave and the here function
+ggsave(here("Week_09","output", "plot1_island.png"), plot = plot1_island)
+
+# Example 2 for count_species_with_plot function
+plot2_year <- count_species_with_plot(x = "year", y = "count", fill = "species")$plot
+print(plot2_year)
+# Save the plot to the output folder using ggsave and the here function
+ggsave(here("Week_09","output", "plot2_year.png"), plot = plot2_year)
+
+```
+
